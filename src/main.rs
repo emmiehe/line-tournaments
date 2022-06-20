@@ -24,28 +24,6 @@ fn parse_position_part(s: &str, board_size: usize) -> Result<usize, String> {
     } else {
         Ok(pos)
     }
-
-    // match s.trim().parse::<usize>() {
-    //     Ok(pos) => {
-    //         if pos >= board_size {
-    //             Err(String::from("Too large"))
-    //         } else {
-    //             Ok(pos)
-    //         }
-    //     }
-    //     Err(e) => Err(e.to_string()),
-    // }
-
-    // if let Ok(pos) = s.trim().parse::<usize>() {
-    //     // process pos
-    //     if pos >= board_size {
-    //         Err(String::from("Too large"))
-    //     } else {
-    //         Ok(pos)
-    //     }
-    // } else {
-    //     Err(String::from("parse position part err"))
-    // }
 }
 
 fn parse_position(s: &str, board_size: usize) -> Result<Position, String> {
@@ -69,11 +47,6 @@ fn main() {
         io::stdin()
             .read_line(&mut input_position)
             .expect("Failed to read line");
-
-        // let guess: u32 = match guess.trim().parse() {
-        //     Ok(num) => num,
-        //     Err(_) => continue,
-        // };
     }
 }
 
