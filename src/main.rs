@@ -17,20 +17,20 @@ fn make_board(n: usize) -> Board {
 #[derive(PartialOrd, PartialEq, Debug)]
 struct Position(usize, usize); // (row, col)
 
-fn parse_position_part(s: &str, board_size: usize) -> Result<usize, String> {
-    let pos = s.trim().parse::<usize>().map_err(|e| e.to_string())?;
+fn parse_position_part(s: &str, board_size: usize) -> Result<usize, &str> {
+    let pos = s.trim().parse::<usize>().map_err(|e| "Not an integer")?;
     if pos >= board_size {
-        Err(String::from("Too large"))
+        Err("Too large")
     } else {
         Ok(pos)
     }
 }
 
-fn parse_position(s: &str, board_size: usize) -> Result<Position, String> {
+fn parse_position(s: &str, board_size: usize) -> Result<Position, &str> {
     let parts = s.trim().split_whitespace().collect::<Vec<&str>>();
 
     if parts.len() != 2 {
-        return Err(String::from("Not 2 parts."));
+        return Err("Not 2 parts");
     }
 
     Ok(Position(parse_position_part(parts[0], board_size)?, parse_position_part(parts[1], board_size)?))
