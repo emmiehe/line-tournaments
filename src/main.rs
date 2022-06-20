@@ -28,12 +28,11 @@ fn parse_position_part(s: &str, board_size: usize) -> Result<usize, &str> {
 
 fn parse_position(s: &str, board_size: usize) -> Result<Position, &str> {
     let parts = s.trim().split_whitespace().collect::<Vec<&str>>();
-
     if parts.len() != 2 {
-        return Err("Not 2 parts");
+        Err("Not 2 parts")
+    } else {
+        Ok(Position(parse_position_part(parts[0], board_size)?, parse_position_part(parts[1], board_size)?))
     }
-
-    Ok(Position(parse_position_part(parts[0], board_size)?, parse_position_part(parts[1], board_size)?))
 }
 
 fn main() {
