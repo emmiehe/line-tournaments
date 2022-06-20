@@ -58,7 +58,7 @@ fn parse_position(s: &str, board_size: usize) -> Result<Position, &str> {
     }
 }
 
-fn valid_position(pos: &Position, board: &Board) -> bool {
+fn position_available(pos: &Position, board: &Board) -> bool {
     let &Position(row, col) = pos;
     board[row][col] == Intersection::Empty
 }
@@ -80,12 +80,15 @@ fn main() {
             .expect("Failed to read line");
 
         match parse_position(&input_position, board_size) {
-            Ok(pos) if valid_position(&pos, &board) => {
-                let Position(row, col) = pos;
-                board[row][col] = Intersection::Player(curr_player);
-                curr_player = (curr_player + 1) % num_players;
+            Ok(pos) => {
+                if position_available(&pos, &board) {
+                    let Position(row, col) = pos;
+                    board[row][col] = Intersection::Player(curr_player);
+                    curr_player = (curr_player + 1) % num_players;
+                } else {
+                    println!("Position taken!")
+                }
             }
-            Ok(pos) => { println!("Position taken!") }
             Err(e) => { println!("{}", e) }
         }
     }
