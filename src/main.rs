@@ -14,6 +14,29 @@ fn make_board(n: usize) -> Board {
     vec![vec![Intersection::Empty; n]; n]
 }
 
+fn board_to_string(board: &Board) -> String {
+    let mut s = String::new();
+
+    s.push_str("   ");
+    for col in 0..board.len() {
+        s.push_str(&format!("{:02} ", col.to_string()));
+    }
+    s.push('\n');
+
+    for (i, row) in board.iter().enumerate() {
+        s.push_str(&format!("{:02} ", i.to_string()));
+        for intersection in row {
+            match intersection {
+                Intersection::Empty => { s.push(' ') }
+                Intersection::Player(id) => { s.push_str(&format!("{}", id)) }
+            }
+            s.push_str("  ");
+        }
+        s.push('\n');
+    }
+    s
+}
+
 #[derive(PartialOrd, PartialEq, Debug)]
 struct Position(usize, usize); // (row, col)
 
@@ -35,17 +58,36 @@ fn parse_position(s: &str, board_size: usize) -> Result<Position, &str> {
     }
 }
 
+fn valid_position(pos: &Position, board: &Board) -> bool {
+    let &Position(row, col) = pos;
+    board[row][col] == Intersection::Empty
+}
+
 fn main() {
     let num_players = 2;
+    let mut curr_player = 0;
+    let board_size = 15;
+    let mut board = make_board(board_size);
 
     loop {
-        println!("Please input your guess.");
+        println!("{}", board_to_string(&board));
+        println!("Please input your position.");
 
         let mut input_position = String::new();
 
         io::stdin()
             .read_line(&mut input_position)
             .expect("Failed to read line");
+
+        match parse_position(&input_position, board_size) {
+            Ok(pos) if valid_position(&pos, &board) => {
+                let Position(row, col) = pos;
+                board[row][col] = Intersection::Player(curr_player);
+                curr_player = (curr_player + 1) % num_players;
+            }
+            Ok(pos) => { println!("Position taken!") }
+            Err(e) => { println!("{}", e) }
+        }
     }
 }
 
