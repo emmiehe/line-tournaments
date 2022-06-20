@@ -10,6 +10,8 @@ enum Intersection {
 
 type Board = Vec<Vec<Intersection>>;
 
+const WINNING_LEN: usize = 5;
+
 fn make_board(n: usize) -> Board {
     vec![vec![Intersection::Empty; n]; n]
 }
@@ -63,6 +65,41 @@ fn position_available(pos: &Position, board: &Board) -> bool {
     board[row][col] == Intersection::Empty
 }
 
+fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
+    if board[row][col] == Intersection::Empty {
+        return None;
+    }
+
+    if board.len() - col >= WINNING_LEN {
+        if let &Intersection::Player(prev_id) = &board[row][col] {
+            for j in col + 1..col + WINNING_LEN + 1 {
+                match &board[row][j] {
+                    &Intersection::Player(id) if id == prev_id => {}
+                    _ => return None,
+                }
+            }
+            return Some(prev_id);
+        }
+    }
+    None
+}
+
+fn game_get_winner(board: &Board) -> Option<usize> {
+    for i in 0..board.len() {
+        for j in 0..board.len() {
+            // horizontal
+            // vertical
+            // diagonal up
+            // diagonal down
+        }
+    }
+    None
+}
+
+fn game_is_tie(board: &Board) -> bool {
+    board.iter().all(|row| row.iter().all(|intersection| intersection != &Intersection::Empty))
+}
+
 fn main() {
     let num_players = 2;
     let mut curr_player = 0;
@@ -84,13 +121,18 @@ fn main() {
                 if position_available(&pos, &board) {
                     let Position(row, col) = pos;
                     board[row][col] = Intersection::Player(curr_player);
-                    curr_player = (curr_player + 1) % num_players;
                 } else {
-                    println!("Position taken!")
+                    println!("Position taken!");
+                    continue;
                 }
             }
-            Err(e) => { println!("{}", e) }
+            Err(e) => {
+                println!("{}", e);
+                continue;
+            }
         }
+
+        curr_player = (curr_player + 1) % num_players;
     }
 }
 
@@ -129,5 +171,19 @@ mod tests {
         for s in bad_strings {
             assert!(parse_position(s, board_size).is_err());
         }
+    }
+
+    #[test]
+    fn test_game_is_tie() {
+        let board_size = 15;
+        let mut board = make_board(board_size);
+
+        for i in 0..board_size {
+            for j in 0..board_size {
+                assert!(!game_is_tie(&board));
+                board[i][j] = Intersection::Player(0);
+            }
+        }
+        assert!(game_is_tie(&board));
     }
 }
