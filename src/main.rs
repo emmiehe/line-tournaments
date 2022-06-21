@@ -1,6 +1,4 @@
-use std::error::Error;
 use std::io;
-use std::num::ParseIntError;
 
 #[derive(Clone, PartialOrd, PartialEq, Debug)]
 enum Intersection {
@@ -29,8 +27,8 @@ fn board_to_string(board: &Board) -> String {
         s.push_str(&format!("{:02} ", i.to_string()));
         for intersection in row {
             match intersection {
-                Intersection::Empty => { s.push(' ') }
-                Intersection::Player(id) => { s.push_str(&format!("{}", id)) }
+                Intersection::Empty => s.push(' '),
+                Intersection::Player(id) => s.push_str(&format!("{}", id)),
             }
             s.push_str("  ");
         }
@@ -70,7 +68,7 @@ fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize
         if let &Intersection::Player(prev_id) = &board[row][col] {
             for j in col + 1..col + WINNING_LEN + 1 {
                 match &board[row][j] {
-                    &Intersection::Player(id) if id == prev_id => {}
+                    &Intersection::Player(id) if id == prev_id => (),
                     _ => return None,
                 }
             }
