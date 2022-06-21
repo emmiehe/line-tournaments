@@ -43,7 +43,7 @@ fn board_to_string(board: &Board) -> String {
 struct Position(usize, usize); // (row, col)
 
 fn parse_position_part(s: &str, board_size: usize) -> Result<usize, &str> {
-    let pos = s.trim().parse::<usize>().map_err(|e| "Not an integer")?;
+    let pos = s.trim().parse::<usize>().map_err(|_| "Not an integer")?;
     if pos >= board_size {
         Err("Too large")
     } else {
@@ -66,10 +66,6 @@ fn position_available(pos: &Position, board: &Board) -> bool {
 }
 
 fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
-    if board[row][col] == Intersection::Empty {
-        return None;
-    }
-
     if board.len() - col >= WINNING_LEN {
         if let &Intersection::Player(prev_id) = &board[row][col] {
             for j in col + 1..col + WINNING_LEN + 1 {
@@ -88,6 +84,7 @@ fn game_get_winner(board: &Board) -> Option<usize> {
     for i in 0..board.len() {
         for j in 0..board.len() {
             // horizontal
+            if let Some(player_id) = check_horizontal(board, Position(i, j)) {}
             // vertical
             // diagonal up
             // diagonal down
