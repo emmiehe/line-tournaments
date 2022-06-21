@@ -58,8 +58,7 @@ fn parse_position(s: &str, board_size: usize) -> Result<Position, &str> {
     }
 }
 
-fn position_available(pos: &Position, board: &Board) -> bool {
-    let &Position(row, col) = pos;
+fn position_available(&Position(row, col): &Position, board: &Board) -> bool {
     board[row][col] == Intersection::Empty
 }
 
