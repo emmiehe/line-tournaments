@@ -27,7 +27,7 @@ fn board_to_string(board: &Board) -> String {
         s.push_str(&format!("{:02} ", i.to_string()));
         for intersection in row {
             match intersection {
-                Intersection::Empty => s.push(' '),
+                Intersection::Empty => s.push('.'),
                 Intersection::Player(id) => s.push_str(&format!("{}", id)),
             }
             s.push_str("  ");
@@ -111,9 +111,8 @@ fn main() {
             .expect("Failed to read line");
 
         match parse_position(&input_position, board_size) {
-            Ok(pos) => {
-                if position_available(&pos, &board) {
-                    let Position(row, col) = pos;
+            Ok(Position(row, col)) => {
+                if position_available(&Position(row, col), &board) {
                     board[row][col] = Intersection::Player(curr_player);
                 } else {
                     println!("Position taken!");
