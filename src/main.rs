@@ -62,21 +62,6 @@ fn position_available(&Position(row, col): &Position, board: &Board) -> bool {
     board[row][col] == Intersection::Empty
 }
 
-// fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
-//     if board.len() - col >= WINNING_LEN {
-//         if let &Intersection::Player(prev_id) = &board[row][col] {
-//             for j in col + 1..col + WINNING_LEN {
-//                 match &board[row][j] {
-//                     &Intersection::Player(id) if id == prev_id => (),
-//                     _ => return None,
-//                 }
-//             }
-//             return Some(prev_id);
-//         }
-//     }
-//     None
-// }
-
 fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
     let prev_id = match intersections[0] {
         Intersection::Player(prev_id) => prev_id,
@@ -91,17 +76,6 @@ fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
     }
 
     Some(prev_id)
-
-    // if let Intersection::Player(prev_id) = intersections[0] {
-    //     for j in 1..WINNING_LEN {
-    //         match intersections[j] {
-    //             Intersection::Player(id) if id == prev_id => (),
-    //             _ => return None,
-    //         }
-    //     }
-    //     return Some(prev_id);
-    // }
-    // None
 }
 
 fn _game_get_winner(board: &Board) -> Option<usize> {
