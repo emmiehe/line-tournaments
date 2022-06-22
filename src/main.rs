@@ -1,6 +1,6 @@
 use std::io;
 
-#[derive(Clone, PartialOrd, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialOrd, PartialEq, Debug)]
 enum Intersection {
     Empty,
     Player(usize),
@@ -62,26 +62,53 @@ fn position_available(&Position(row, col): &Position, board: &Board) -> bool {
     board[row][col] == Intersection::Empty
 }
 
-fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
-    if board.len() - col >= WINNING_LEN {
-        if let &Intersection::Player(prev_id) = &board[row][col] {
-            for j in col + 1..col + WINNING_LEN {
-                match &board[row][j] {
-                    &Intersection::Player(id) if id == prev_id => (),
-                    _ => return None,
-                }
-            }
-            return Some(prev_id);
+// fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
+//     if board.len() - col >= WINNING_LEN {
+//         if let &Intersection::Player(prev_id) = &board[row][col] {
+//             for j in col + 1..col + WINNING_LEN {
+//                 match &board[row][j] {
+//                     &Intersection::Player(id) if id == prev_id => (),
+//                     _ => return None,
+//                 }
+//             }
+//             return Some(prev_id);
+//         }
+//     }
+//     None
+// }
+
+fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
+    let prev_id = match intersections[0] {
+        Intersection::Player(prev_id) => prev_id,
+        _ => return None,
+    };
+
+    for j in 1..WINNING_LEN {
+        match intersections[j] {
+            Intersection::Player(id) if id == prev_id => (),
+            _ => return None,
         }
     }
-    None
+
+    Some(prev_id)
+
+    // if let Intersection::Player(prev_id) = intersections[0] {
+    //     for j in 1..WINNING_LEN {
+    //         match intersections[j] {
+    //             Intersection::Player(id) if id == prev_id => (),
+    //             _ => return None,
+    //         }
+    //     }
+    //     return Some(prev_id);
+    // }
+    // None
 }
 
-fn game_get_winner(board: &Board) -> Option<usize> {
-    for i in 0..board.len() {
-        for j in 0..board.len() {
+fn _game_get_winner(board: &Board) -> Option<usize> {
+    for _i in 0..board.len() {
+        for _j in 0..board.len() {
             // horizontal
-            if let Some(player_id) = check_horizontal(board, Position(i, j)) {}
+            // if let Some(player_id) = check_horizontal(board, Position(i, j)) {}
             // vertical
             // diagonal up
             // diagonal down
@@ -180,16 +207,30 @@ mod tests {
         assert!(game_is_tie(&board));
     }
 
+    // #[test]
+    // fn test_check_horizontal() {
+    //     let board_size = 6;
+    //     let mut board = make_board(board_size);
+    //     for i in 1..board_size {
+    //         board[2][i] = Intersection::Player(0);
+    //     }
+    //
+    //     assert_eq!(None, check_horizontal(&board, Position(0, 0)));
+    //     assert_eq!(Some(0), check_horizontal(&board, Position(2, 1)));
+    //     assert_eq!(None, check_horizontal(&board, Position(2, 2)));
+    // }
+
     #[test]
-    fn test_check_horizontal() {
-        let board_size = 6;
-        let mut board = make_board(board_size);
-        for i in 1..board_size {
-            board[2][i] = Intersection::Player(0);
+    fn test_check_winning() {
+        let mut intersections = [Intersection::Empty; WINNING_LEN];
+        for i in 0..WINNING_LEN {
+            intersections[i] = Intersection::Player(0);
         }
 
-        assert_eq!(None, check_horizontal(&board, Position(0, 0)));
-        assert_eq!(Some(0), check_horizontal(&board, Position(2, 1)));
-        assert_eq!(None, check_horizontal(&board, Position(2, 2)));
+        assert_eq!(Some(0), check_winning(&intersections));
+        intersections[2] = Intersection::Empty;
+        assert_eq!(None, check_winning(&intersections));
+        intersections[2] = Intersection::Player(1);
+        assert_eq!(None, check_winning(&intersections));
     }
 }
