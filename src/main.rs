@@ -78,12 +78,33 @@ fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
     Some(prev_id)
 }
 
-fn _game_get_winner(board: &Board) -> Option<usize> {
-    for _i in 0..board.len() {
-        for _j in 0..board.len() {
+fn get_positions_horizontal(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
+    let mut intersections = [Intersection::Empty; WINNING_LEN];
+    for i in col..board.len().min(col + WINNING_LEN) {
+        intersections[i - col] = board[row][i].clone();
+    }
+    intersections
+}
+
+fn get_positions_vertical(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
+    let mut intersections = [Intersection::Empty; WINNING_LEN];
+    for i in row..board.len().min(row + WINNING_LEN) {
+        intersections[i - row] = board[i][col].clone();
+    }
+    intersections
+}
+
+fn game_get_winner(board: &Board) -> Option<usize> {
+    for i in 0..board.len() {
+        for j in 0..board.len() {
             // horizontal
-            // if let Some(player_id) = check_horizontal(board, Position(i, j)) {}
+            if let Some(player_id) = check_winning(&get_positions_horizontal(board, &Position(i, j))) {
+                return Some(player_id);
+            }
             // vertical
+            if let Some(player_id) = check_winning(&get_positions_vertical(board, &Position(i, j))) {
+                return Some(player_id);
+            }
             // diagonal up
             // diagonal down
         }
@@ -181,19 +202,6 @@ mod tests {
         assert!(game_is_tie(&board));
     }
 
-    // #[test]
-    // fn test_check_horizontal() {
-    //     let board_size = 6;
-    //     let mut board = make_board(board_size);
-    //     for i in 1..board_size {
-    //         board[2][i] = Intersection::Player(0);
-    //     }
-    //
-    //     assert_eq!(None, check_horizontal(&board, Position(0, 0)));
-    //     assert_eq!(Some(0), check_horizontal(&board, Position(2, 1)));
-    //     assert_eq!(None, check_horizontal(&board, Position(2, 2)));
-    // }
-
     #[test]
     fn test_check_winning() {
         let mut intersections = [Intersection::Empty; WINNING_LEN];
@@ -206,5 +214,27 @@ mod tests {
         assert_eq!(None, check_winning(&intersections));
         intersections[2] = Intersection::Player(1);
         assert_eq!(None, check_winning(&intersections));
+    }
+
+    #[test]
+    fn test_get_positions() {
+        // todo: waiting for some pull request on this part :)
+    }
+
+    #[test]
+    fn test_game_get_winner() {
+        let board_size = 6;
+        let mut board = make_board(board_size);
+
+        // horizontal win
+        for i in 1..WINNING_LEN {
+            board[2][i] = Intersection::Player(0);
+        }
+
+        assert_eq!(None, game_get_winner(&board));
+        board[2][0] = Intersection::Player(0);
+        assert_eq!(Some(0), game_get_winner(&board));
+        board[2][0] = Intersection::Player(1);
+        assert_eq!(None, game_get_winner(&board));
     }
 }
