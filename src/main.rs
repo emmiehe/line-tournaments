@@ -121,13 +121,13 @@ fn game_is_tie(board: &Board) -> bool {
 fn main() {
     let num_players = 2;
     let mut curr_player = 0;
-    let board_size = 15;
+    let board_size = 6;
     let mut board = make_board(board_size);
 
-    loop {
-        println!("{}", board_to_string(&board));
-        println!("Please input your position.");
+    println!("{}", board_to_string(&board));
 
+    loop {
+        println!("Please input your position.");
         let mut input_position = String::new();
 
         io::stdin()
@@ -147,6 +147,18 @@ fn main() {
                 println!("{}", e);
                 continue;
             }
+        }
+
+        println!("{}", board_to_string(&board));
+
+        if let Some(player_id) = game_get_winner(&board) {
+            println!("Player {} won the game!", player_id);
+            break;
+        }
+
+        if game_is_tie(&board) {
+            println!("Game is tie!");
+            break;
         }
 
         curr_player = (curr_player + 1) % num_players;
