@@ -68,9 +68,9 @@ fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
         _ => return None,
     };
 
-    for j in 1..WINNING_LEN {
-        match intersections[j] {
-            Intersection::Player(id) if id == prev_id => (),
+    for intersection in intersections.iter().take(WINNING_LEN).skip(1) {
+        match intersection {
+            &Intersection::Player(id) if id == prev_id => (),
             _ => return None,
         }
     }
@@ -80,16 +80,18 @@ fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
 
 fn get_positions_horizontal(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
     let mut intersections = [Intersection::Empty; WINNING_LEN];
-    for i in col..board.len().min(col + WINNING_LEN) {
-        intersections[i - col] = board[row][i].clone();
-    }
+    intersections[..(board.len().min(col + WINNING_LEN) - col)].copy_from_slice(&board[row][col..board.len().min(col + WINNING_LEN)]);
+    // // above code suggested by Clippy; below is my original code
+    // for i in col..board.len().min(col + WINNING_LEN) {
+    //     intersections[i - col] = board[row][i];
+    // }
     intersections
 }
 
 fn get_positions_vertical(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
     let mut intersections = [Intersection::Empty; WINNING_LEN];
     for i in row..board.len().min(row + WINNING_LEN) {
-        intersections[i - row] = board[i][col].clone();
+        intersections[i - row] = board[i][col];
     }
     intersections
 }
