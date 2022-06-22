@@ -65,7 +65,7 @@ fn position_available(&Position(row, col): &Position, board: &Board) -> bool {
 fn check_horizontal(board: &Board, Position(row, col): Position) -> Option<usize> {
     if board.len() - col >= WINNING_LEN {
         if let &Intersection::Player(prev_id) = &board[row][col] {
-            for j in col + 1..col + WINNING_LEN + 1 {
+            for j in col + 1..col + WINNING_LEN {
                 match &board[row][j] {
                     &Intersection::Player(id) if id == prev_id => (),
                     _ => return None,
@@ -178,5 +178,18 @@ mod tests {
             }
         }
         assert!(game_is_tie(&board));
+    }
+
+    #[test]
+    fn test_check_horizontal() {
+        let board_size = 6;
+        let mut board = make_board(board_size);
+        for i in 1..board_size {
+            board[2][i] = Intersection::Player(0);
+        }
+
+        assert_eq!(None, check_horizontal(&board, Position(0, 0)));
+        assert_eq!(Some(0), check_horizontal(&board, Position(2, 1)));
+        assert_eq!(None, check_horizontal(&board, Position(2, 2)));
     }
 }
