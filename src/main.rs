@@ -147,7 +147,7 @@ fn game_is_tie(board: &Board) -> bool {
 fn main() {
     let num_players = 2;
     let mut curr_player = 0;
-    let board_size = 6;
+    let board_size = 10;
     let mut board = make_board(board_size);
 
     println!("{}", board_to_string(&board));
