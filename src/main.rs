@@ -96,6 +96,26 @@ fn get_positions_vertical(board: &Board, &Position(row, col): &Position) -> [Int
     intersections
 }
 
+fn get_positions_diagonal_up(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
+    let mut intersections = [Intersection::Empty; WINNING_LEN];
+    let mut offset = 0;
+    while offset < WINNING_LEN && row - offset > 0 && col + offset < board.len() {
+        intersections[offset] = board[row - offset][col + offset];
+        offset += 1;
+    }
+    intersections
+}
+
+fn get_positions_diagonal_down(board: &Board, &Position(row, col): &Position) -> [Intersection; WINNING_LEN] {
+    let mut intersections = [Intersection::Empty; WINNING_LEN];
+    let mut offset = 0;
+    while offset < WINNING_LEN && row + offset < board.len() && col + offset < board.len() {
+        intersections[offset] = board[row + offset][col + offset];
+        offset += 1;
+    }
+    intersections
+}
+
 fn game_get_winner(board: &Board) -> Option<usize> {
     for i in 0..board.len() {
         for j in 0..board.len() {
@@ -108,7 +128,13 @@ fn game_get_winner(board: &Board) -> Option<usize> {
                 return Some(player_id);
             }
             // diagonal up
+            if let Some(player_id) = check_winning(&get_positions_diagonal_up(board, &Position(i, j))) {
+                return Some(player_id);
+            }
             // diagonal down
+            if let Some(player_id) = check_winning(&get_positions_diagonal_down(board, &Position(i, j))) {
+                return Some(player_id);
+            }
         }
     }
     None
