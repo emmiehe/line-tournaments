@@ -1,9 +1,11 @@
 use std::io;
 
+type PlayerId = usize;
+
 #[derive(Clone, Copy, PartialOrd, PartialEq, Debug)]
 enum Intersection {
     Empty,
-    Player(usize),
+    Player(PlayerId),
 }
 
 type Board = Vec<Vec<Intersection>>;
@@ -62,7 +64,7 @@ fn position_available(&Position(row, col): &Position, board: &Board) -> bool {
     board[row][col] == Intersection::Empty
 }
 
-fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<usize> {
+fn check_winning(intersections: &[Intersection; WINNING_LEN]) -> Option<PlayerId> {
     let prev_id = match intersections[0] {
         Intersection::Player(prev_id) => prev_id,
         _ => return None,
